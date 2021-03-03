@@ -56,10 +56,11 @@ data.forEach(function(d) {
 });
 
 
+
 /* Scale */
 var xScale = d3.scaleLinear()
   .domain(d3.extent(data[0].values, d => d.date))
-  .range([width-margin, 0]);
+  .range([0, width-margin]);
 
 var yScale = d3.scaleLinear()
   .domain([0, d3.max(data[0].values, d => d.value)])
@@ -111,8 +112,9 @@ lines.selectAll("circle-group")
 
 
 /* Add Axis into SVG */
-var xAxis = d3.axisBottom(xScale).ticks(7);
+var xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%d-%m-%Y"))
 var yAxis = d3.axisLeft(yScale).ticks(5);
+
 
 svg.append("g")
   .attr("class", "x axis")
@@ -147,29 +149,21 @@ var legend = svg.selectAll('.legend')
         {                   
             var height = legendRectSize + legendSpacing;
             var offset =  height * color.domain().length / 2;
-            var horz = width - 150;//2 * legendRectSize; 
+            var horz = 2 * legendRectSize;//2 * legendRectSize; 
             var vert = i * height - offset + 50;
             return 'translate(' + horz + ',' + vert + ')';
           });
 
-legend.append('rect') 
-          .attr('width', legendRectSize)
-          .attr('height', legendRectSize)
-          .style('fill', color) 
-          .style('stroke', color);
 
-legend.append('text')
-          .attr('x', legendRectSize + legendSpacing)
-          .attr('y', legendRectSize - legendSpacing)
-          .text(function(d, i) { return keys[i]; });  
+arrows.forEach(({type_of_rho,min_period_id,max_period_id})=>{
+  if(type_of_rho !== 'none') {
+    svg.append("rect")
+    .attr("x", xScale(parseDate(min_period_id)))
+    .attr("width", xScale(parseDate(max_period_id)) - xScale(parseDate(min_period_id)))
+    .attr("height", height-margin)
+    .attr("fill", type_of_rho === 'reverse' ? 'green' : 'red')
+    .attr("opacity", 0.3);
+  } 
+  })
 
-          legend.append("svg:defs").append("svg:marker")
-          .attr("id", "triangle")
-          .attr("refX", 12500)
-          .attr("refY", 2500)
-          .attr("markerWidth", 30)
-          .attr("markerHeight", 30)
-          .attr("orient", "auto")
-          .append("path")
-          .attr("d", "M 0 0 12 6 0 12 3 6")
-          .style("fill", "black");
+
