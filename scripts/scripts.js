@@ -8,9 +8,9 @@ import arrows from './arrows'
 
 // console.log(firstLine,firstLineMap)
 
-// let secondLineMap = secondLine.map(({date, value})=>{
-//     return {date: date,value: +value  }
-// })
+let secondLineMap = secondLine.map(({date, value})=>{
+    return {date: date,value: +value*0.1  }
+})
 
 
 var keys = ["secondLine", "firstLine"]
@@ -19,7 +19,7 @@ var data =
 [
 {
     name : "secondLine",
-    values: secondLine
+    values: secondLineMap
 },
 {
 name : "firstLine",
@@ -27,8 +27,8 @@ values : firstLine
 },
 ];
 
-var width = 1000;
-var height = 300;
+var width = 1500;
+var height = 500;
 var margin = 50;
 var duration = 250;
 var legendRectSize = 18;                             
@@ -126,7 +126,7 @@ svg.append("g")
   .attr("dy", "1em")
   .style("text-anchor", "middle")                   
   .attr("fill", "#000")
-  .text("Date(min)");
+  .text("Date");
 
 svg.append("g")
   .attr("class", "y axis")
@@ -153,7 +153,27 @@ var legend = svg.selectAll('.legend')
             var vert = i * height - offset + 50;
             return 'translate(' + horz + ',' + vert + ')';
           });
+          legend.append('rect') 
+          .attr('width', legendRectSize)
+          .attr('height', legendRectSize)
+          .style('fill', color) 
+          .style('stroke', color);
 
+legend.append('text')
+          .attr('x', legendRectSize + legendSpacing)
+          .attr('y', legendRectSize - legendSpacing)
+          .text(function(d, i) { return keys[i]; });  
+
+          legend.append("svg:defs").append("svg:marker")
+          .attr("id", "triangle")
+          .attr("refX", 12500)
+          .attr("refY", 2500)
+          .attr("markerWidth", 30)
+          .attr("markerHeight", 30)
+          .attr("orient", "auto")
+          .append("path")
+          .attr("d", "M 0 0 12 6 0 12 3 6")
+          .style("fill", "black");
 
 arrows.forEach(({type_of_rho,min_period_id,max_period_id})=>{
   if(type_of_rho !== 'none') {
